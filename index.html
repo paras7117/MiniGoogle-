@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MiniGoogle — Search Smarter. Rank Better.</title>
+<meta name="description" content="An interactive mini search engine demonstrating keyword frequency versus PageRank and modern ranking signals.">
+<style>
+:root{--blue:#4285f4;--blue-dark:#1967d2;--red:#ea4335;--yellow:#fbbc05;--green:#34a853;--ink:#202124;--muted:#687078;--line:#e5e8ee;--bg:#f7f9fc;--card:#fff;--shadow:0 10px 30px rgba(32,45,70,.07)}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+button,input{font:inherit}.topbar{height:68px;display:flex;align-items:center;justify-content:space-between;padding:0 clamp(18px,5vw,72px);background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:5}.brand{font-size:25px;font-weight:850;letter-spacing:-1.3px;text-decoration:none}.brand span:nth-child(4n+1){color:var(--blue)}.brand span:nth-child(4n+2){color:var(--red)}.brand span:nth-child(4n+3){color:var(--yellow)}.brand span:nth-child(4n){color:var(--green)}.top-note{font-size:13px;color:var(--muted)}
+.hero{max-width:1100px;margin:56px auto 32px;padding:0 22px;text-align:center}.hero .eyebrow{display:inline-flex;align-items:center;gap:8px;border:1px solid #dce7fb;background:#eff5ff;color:var(--blue-dark);padding:7px 12px;border-radius:999px;font-size:12px;font-weight:700;letter-spacing:.04em}.hero h1{font-size:clamp(38px,6vw,66px);letter-spacing:-3px;line-height:1.02;margin:20px 0 12px}.hero h1 .blue{color:var(--blue)}.hero p{margin:0 auto;color:var(--muted);font-size:16px;max-width:650px;line-height:1.65}.search-wrap{max-width:760px;margin:28px auto 0;display:flex;gap:10px}.searchbox{display:flex;align-items:center;gap:12px;background:#fff;border:1px solid #dfe3eb;border-radius:16px;padding:0 17px;flex:1;min-width:0;box-shadow:var(--shadow);transition:.2s}.searchbox:focus-within{border-color:var(--blue);box-shadow:0 0 0 4px #4285f41c}.searchbox svg{width:20px;color:#7a8491;flex-shrink:0}.searchbox input{border:0;outline:0;width:100%;height:54px;background:transparent;color:var(--ink);font-size:15px}.primary{border:0;background:var(--blue);color:#fff;border-radius:14px;padding:0 23px;font-weight:700;cursor:pointer;box-shadow:0 5px 13px #4285f433;transition:.2s}.primary:hover{background:var(--blue-dark);transform:translateY(-1px)}.quick{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;margin-top:14px}.chip{border:1px solid var(--line);background:#fff;color:#5f6875;padding:7px 12px;border-radius:999px;font-size:12px;cursor:pointer}.chip:hover{border-color:var(--blue);color:var(--blue)}
+.container{max-width:1180px;margin:0 auto;padding:0 22px 70px}.section-head{display:flex;align-items:end;justify-content:space-between;gap:20px;margin:44px 0 17px}.section-head h2{font-size:23px;letter-spacing:-.7px;margin:0}.section-head p{margin:5px 0 0;color:var(--muted);font-size:13px}.controls{display:flex;gap:9px;flex-wrap:wrap}.secondary{background:#fff;border:1px solid var(--line);padding:10px 14px;border-radius:11px;font-weight:700;font-size:12px;cursor:pointer;color:#384252}.secondary:hover{border-color:#9bbcf7;color:var(--blue-dark)}.rank-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.panel{background:var(--card);border:1px solid var(--line);border-radius:19px;overflow:hidden;box-shadow:var(--shadow)}.panel-head{padding:19px 20px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--line)}.panel-title{display:flex;align-items:center;gap:10px}.dot{height:10px;width:10px;border-radius:50%}.panel h3{font-size:15px;margin:0}.panel-head small{display:block;color:var(--muted);font-size:11px;margin-top:4px}.tag{font-size:10px;font-weight:800;letter-spacing:.06em;padding:6px 8px;border-radius:7px}.tag.red{background:#fff0ee;color:#c73529}.tag.blue{background:#edf4ff;color:#1967d2}.results{padding:5px 18px 14px}.result{display:grid;grid-template-columns:26px 1fr auto;gap:10px;align-items:start;padding:15px 2px;border-bottom:1px solid #f0f2f5}.result:last-child{border-bottom:0}.rank{font-size:13px;font-weight:800;color:#9aa2ad;padding-top:2px}.result-name{font-size:13px;font-weight:750;overflow-wrap:anywhere}.result-desc{font-size:11px;color:var(--muted);line-height:1.45;margin-top:4px}.metric{font-size:11px;font-weight:800;white-space:nowrap;padding:5px 7px;border-radius:7px}.metric.red{color:#c73529;background:#fff0ee}.metric.blue{color:#1967d2;background:#edf4ff}.why{font-size:10px;color:#8a929d;margin-top:5px}.empty{padding:28px;text-align:center;color:var(--muted);font-size:13px}
+.explain{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:18px}.mini-card{background:#fff;border:1px solid var(--line);border-radius:15px;padding:17px}.mini-card .num{font-size:11px;font-weight:850;color:var(--blue);letter-spacing:.08em}.mini-card h4{margin:8px 0 5px;font-size:14px}.mini-card p{margin:0;color:var(--muted);font-size:12px;line-height:1.55}
+.graph-card{background:#fff;border:1px solid var(--line);border-radius:19px;padding:20px;box-shadow:var(--shadow)}.graph-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}.graph-top p{font-size:12px;color:var(--muted);margin:5px 0 0}.graph-wrap{width:100%;overflow:hidden;margin-top:10px}.graph-wrap svg{display:block;width:100%;min-width:600px;height:auto}.edge{stroke:#cbd4e1;stroke-width:1.7;fill:none;marker-end:url(#arrow)}.edge.active-in{stroke:var(--green);stroke-width:3}.edge.active-out{stroke:var(--blue);stroke-width:3}.node{cursor:pointer}.node circle{fill:#eef4ff;stroke:#8db5fa;stroke-width:2}.node text{font-size:11px;fill:#263448;font-weight:700;text-anchor:middle;pointer-events:none}.node.selected circle{fill:#dceaff;stroke:var(--blue-dark);stroke-width:3}.node.dim{opacity:.24}.graph-legend{display:flex;gap:15px;flex-wrap:wrap;font-size:11px;color:var(--muted);margin-top:6px}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:5px}.selected-info{margin-top:14px;padding:13px 15px;border-radius:12px;background:#f5f8fc;font-size:12px;color:#4f5b6a;line-height:1.6}.selected-info strong{color:var(--ink)}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}.stat{border:1px solid var(--line);border-radius:13px;padding:14px;background:#fff}.stat b{font-size:21px;display:block;letter-spacing:-.6px}.stat span{font-size:11px;color:var(--muted)}
+.spam-box{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-top:18px}.spam-side{padding:20px;border-radius:17px;border:1px solid var(--line);background:#fff}.spam-side h3{margin:0 0 8px;font-size:15px}.spam-side p{margin:0;color:var(--muted);font-size:12px;line-height:1.6}.spam-domain{font-size:14px;font-weight:800;margin:12px 0}.pills{display:flex;gap:7px;flex-wrap:wrap}.pill{font-size:10px;padding:5px 8px;border-radius:7px;background:#f1f3f6;color:#596273}.compare-table{width:100%;border-collapse:collapse;background:#fff;border:1px solid var(--line);border-radius:15px;overflow:hidden;font-size:12px}.compare-table th,.compare-table td{text-align:left;padding:13px 15px;border-bottom:1px solid #edf0f4}.compare-table th{background:#f4f6f9;font-size:11px;color:#536071}.compare-table tr:last-child td{border-bottom:0}.red-text{color:#c73529;font-weight:750}.blue-text{color:#1967d2;font-weight:750}.foot{text-align:center;color:#929aa5;font-size:11px;padding:26px 10px 0}.toast{position:fixed;bottom:20px;left:50%;transform:translate(-50%,20px);opacity:0;background:#202124;color:white;padding:11px 16px;border-radius:10px;font-size:12px;transition:.25s;pointer-events:none;z-index:9}.toast.show{opacity:1;transform:translate(-50%,0)}
+@media(max-width:760px){.top-note{display:none}.hero{margin-top:38px}.hero h1{letter-spacing:-2px}.search-wrap{flex-direction:column}.primary{height:48px}.rank-grid,.spam-box{grid-template-columns:1fr}.explain{grid-template-columns:1fr}.section-head{align-items:start;flex-direction:column}.stats{grid-template-columns:1fr 1fr}.compare-table{font-size:10px}.compare-table th,.compare-table td{padding:10px 8px}.container{padding-left:14px;padding-right:14px}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="#" aria-label="MiniGoogle home"><span>H</span><span>i</span><span>g</span><span>h</span><span>l</span><span>i</span><span>g</span><span>h</span><span>e</span><span>d</span></a>
+  <div class="top-note">Search Smarter. Rank Better.</div>
+</header>
+<main>
+<section class="hero">
+  <div class="eyebrow">✦ AN INTERACTIVE SEARCH EXPERIMENT</div>
+  <h1>Welcome to <span class="blue">MiniGoogle</span></h1>
+  <p>See how search rankings change when we move from simply counting keywords to evaluating links, relevance, and spam signals.</p>
+  <form class="search-wrap" id="searchForm">
+    <label class="searchbox" aria-label="Search query">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>
+      <input id="query" value="pizza Pune" placeholder="Search anything..." autocomplete="off">
+    </label>
+    <button class="primary" type="submit">Search</button>
+  </form>
+  <div class="quick"><button class="chip" data-query="pizza Pune">Pizza Pune</button><button class="chip" data-query="food Pune">Food Pune</button><button class="chip" data-query="pizza recipes">Pizza recipes</button><button class="chip" data-query="cheap food">Cheap food</button></div>
+</section>
+
+<div class="container">
+  <div class="section-head">
+    <div><h2>One search. Two ranking systems.</h2><p id="queryLabel">Showing results for “pizza Pune”</p></div>
+    <div class="controls"><button class="secondary" id="runBtn">↻ Run PageRank</button><button class="secondary" id="compareBtn">Compare rankings</button></div>
+  </div>
+  <section class="rank-grid" aria-label="Ranking comparison">
+    <article class="panel">
+      <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--red)"></span><div><h3>OLD WAY</h3><small>Keyword frequency ranking</small></div></div><span class="tag red">SIMPLIFIED OLD MODEL</span></div>
+      <div class="results" id="oldResults"></div>
+    </article>
+    <article class="panel">
+      <div class="panel-head"><div class="panel-title"><span class="dot" style="background:var(--blue)"></span><div><h3>NEW WAY</h3><small>PageRank + relevance + spam signals</small></div></div><span class="tag blue">EDUCATIONAL MODEL</span></div>
+      <div class="results" id="newResults"></div>
+    </article>
+  </section>
+  <section class="explain">
+    <div class="mini-card"><div class="num">01 / OLD MODEL</div><h4>Count the keywords</h4><p>A basic keyword-stuffing model rewards pages that repeat the searched term, even when repetition does not mean quality.</p></div>
+    <div class="mini-card"><div class="num">02 / PAGERANK</div><h4>Follow the links</h4><p>PageRank estimates page importance from the links pointing to it. A link from an important page carries more weight.</p></div>
+    <div class="mini-card"><div class="num">03 / MODERN SIGNALS</div><h4>Consider more context</h4><p>This demo combines PageRank with query relevance and a simplified keyword-stuffing penalty. It is not Google's actual algorithm.</p></div>
+  </section>
+
+  <div class="section-head"><div><h2>How PageRank works</h2><p>Explore the sample web of six connected pages. Select a node to inspect its links.</p></div></div>
+  <section class="graph-card">
+    <div class="graph-top"><div><strong style="font-size:14px">Website link network</strong><p>Green = links into selected page · Blue = links out of selected page</p></div><button class="secondary" id="resetGraph">Reset selection</button></div>
+    <div class="graph-wrap"><svg id="network" viewBox="0 0 820 390" role="img" aria-label="Interactive graph of six websites connected by links"></svg></div>
+    <div class="graph-legend"><span><i class="legend-dot" style="background:#4285f4"></i>Selected website</span><span><i class="legend-dot" style="background:#34a853"></i>Incoming links</span><span><i class="legend-dot" style="background:#b9c5d5"></i>Other links</span></div>
+    <div class="selected-info" id="selectedInfo"><strong>Select a website node</strong> to see its incoming links, outgoing links, and calculated PageRank score.</div>
+  </section>
+  <div class="stats" id="stats">
+    <div class="stat"><b id="iterations">—</b><span>PageRank iterations</span></div>
+    <div class="stat"><b id="damping">0.85</b><span>Damping factor</span></div>
+    <div class="stat"><b id="convergence">—</b><span>Final score change</span></div>
+  </div>
+
+  <div class="section-head"><div><h2>Why keyword stuffing doesn't work</h2><p>Repeated words can make a page look relevant to a simplistic counter, but they do not create genuine authority.</p></div></div>
+  <section class="graph-card" style="margin-bottom:18px">
+    <div class="graph-top">
+      <div><strong style="font-size:14px">Add spam websites</strong><p>Add up to three sample spam domains to see how keyword stuffing affects the two rankings.</p></div>
+      <button class="secondary" id="addSpamBtn">＋ Add 3 spam websites</button>
+    </div>
+    <div id="spamStatus" class="selected-info" style="margin-top:12px">No extra spam websites added yet. The three sample sites will be added to the search index when you click the button.</div>
+  </section>
+  <section class="spam-box">
+    <div class="spam-side"><span class="tag red">OLD WAY</span><div class="spam-domain">pizza-pizza-pizza.com</div><p>The domain repeats “pizza” three times. In our deliberately simple old model, this gives it a strong keyword-frequency advantage for a pizza query.</p><div class="pills" style="margin-top:12px"><span class="pill">pizza × 3 in domain</span><span class="pill">Frequency rewarded</span></div></div>
+    <div class="spam-side"><span class="tag blue">NEW WAY</span><div class="spam-domain">Relevance is not repetition</div><p>Our modern-style demo checks whether keywords are repeated excessively and applies a spam penalty. PageRank comes from the link network, not from repeating a domain name.</p><div class="pills" style="margin-top:12px"><span class="pill">Link authority</span><span class="pill">Relevance</span><span class="pill">Spam signal</span></div></div>
+  </section>
+
+  <div class="section-head"><div><h2>Quick comparison</h2><p>What changes between the two educational models?</p></div></div>
+  <table class="compare-table"><thead><tr><th>Feature</th><th>Old way</th><th>New way in this demo</th></tr></thead><tbody>
+    <tr><td>Keyword frequency</td><td class="red-text">Dominant factor</td><td class="blue-text">One relevance signal</td></tr>
+    <tr><td>Incoming links</td><td>Ignored</td><td class="blue-text">Used by PageRank</td></tr>
+    <tr><td>Link authority</td><td>Ignored</td><td class="blue-text">Important</td></tr>
+    <tr><td>Keyword stuffing</td><td class="red-text">Can manipulate ranking</td><td class="blue-text">Receives a spam penalty</td></tr>
+    <tr><td>Overall ranking</td><td>Keyword counting</td><td class="blue-text">PageRank + relevance − spam</td></tr>
+  </tbody></table>
+  <footer class="foot">MiniGoogle · Search Smarter. Rank Better. <br>Educational simulation only. PageRank is one component of this demo, not a reproduction of Google's proprietary ranking systems.</footer>
+</div>
+</main>
+<div class="toast" id="toast">PageRank recalculated</div>
+<script>
+const pages = [
+ {id:"pune",domain:"pune-food-guide.com",title:"Pune Food Guide",desc:"A guide to restaurants, street food and places to eat across Pune.",keywords:["pune","food","restaurants","pizza","guide","eats"],links:["college","best","cheap"],spam:0.02},
+ {id:"college",domain:"college-canteen-blog.com",title:"College Canteen Blog",desc:"Student reviews, campus meals and affordable canteen food.",keywords:["college","canteen","food","cheap","pune","students"],links:["pune","cheap"],spam:0.01},
+ {id:"best",domain:"best-pizza-pune.com",title:"Best Pizza Pune",desc:"Local pizza reviews, pizzerias and recommendations in Pune.",keywords:["pizza","pune","best","restaurants","food"],links:["pune","cheap","recipes"],spam:0.03},
+ {id:"recipes",domain:"pizza-recipes-home.com",title:"Pizza Recipes Home",desc:"Homemade pizza recipes, ingredients, baking tips and cooking guides.",keywords:["pizza","recipes","home","cooking","food"],links:["best","pizza"],spam:0.02},
+ {id:"cheap",domain:"cheap-eats-pune.com",title:"Cheap Eats Pune",desc:"Budget-friendly food spots, affordable meals and value picks in Pune.",keywords:["cheap","eats","pune","food","budget","pizza"],links:["pune","college","best"],spam:0.01},
+ {id:"pizza",domain:"pizza-pizza-pizza.com",title:"Pizza Pizza Pizza",desc:"A sample page with an unusually repetitive pizza-focused domain name.",keywords:["pizza","pizza","pizza","pizza","pune"],links:["recipes"],spam:0.78}
+];
+const extraSpamPages = [
+ {id:"spam1",domain:"pizza-pizza-pizza-pune.com",title:"Pizza Pizza Pizza Pune",desc:"Sample spam page that repeats pizza keywords excessively.",keywords:["pizza","pizza","pizza","pizza","pizza","pune","pizza"],links:["pizza"],spam:0.98},
+ {id:"spam2",domain:"best-best-pizza-pizza.com",title:"Best Best Pizza Pizza",desc:"Sample keyword-stuffed page with repetitive pizza phrases.",keywords:["best","best","pizza","pizza","pizza","pizza"],links:["pizza","best"],spam:0.96},
+ {id:"spam3",domain:"cheap-pizza-pizza-pizza.com",title:"Cheap Pizza Pizza Pizza",desc:"Sample spam page repeating cheap and pizza search terms.",keywords:["cheap","cheap","pizza","pizza","pizza","pizza","pune"],links:["spam1"],spam:0.99}
+];
+const DAMPING=.85;
+let pagerank={},iterations=0,finalDelta=0,selected="best",lastQuery="pizza Pune",spamSitesAdded=false;
+const $=id=>document.getElementById(id);
+function normalize(s){return s.toLowerCase().replace(/[^a-z0-9\s-]/g," ").split(/\s+/).filter(Boolean)}
+function queryTokens(q){return normalize(q).filter(w=>!["the","a","an","in","to","for","of"].includes(w))}
+function addThreeSpamSites(){
+ if(spamSitesAdded){
+  $("spamStatus").textContent="The three extra spam websites are already in the search index.";
+  return;
+ }
+ pages.push(...extraSpamPages);
+ // Give the extra sites positions in the network graph.
+ coords.spam1=[90,185]; coords.spam2=[390,190]; coords.spam3=[735,205];
+ spamSitesAdded=true;
+ $("spamStatus").innerHTML="<strong>3 spam websites added:</strong> pizza-pizza-pizza-pune.com, best-best-pizza-pizza.com, and cheap-pizza-pizza-pizza.com. They now appear in both rankings and the PageRank network.";
+ run();
+}
+function calculatePageRank(){
+ const n=pages.length;let scores=Object.fromEntries(pages.map(p=>[p.id,1/n]));let delta=0;iterations=0;
+ for(let k=0;k<100;k++){
+  const next=Object.fromEntries(pages.map(p=>[p.id,(1-DAMPING)/n]));
+  let dangling=0;
+  pages.forEach(p=>{if(!p.links.length)dangling+=scores[p.id]});
+  pages.forEach(p=>{
+   const share=scores[p.id]/(p.links.length||1);
+   p.links.forEach(target=>{next[target]+=DAMPING*share});
+  });
+  const danglingShare=DAMPING*dangling/n;
+  pages.forEach(p=>next[p.id]+=danglingShare);
+  delta=pages.reduce((sum,p)=>sum+Math.abs(next[p.id]-scores[p.id]),0);
+  scores=next;iterations=k+1;if(delta<1e-10)break;
+ }
+ const total=Object.values(scores).reduce((a,b)=>a+b,0);
+ pagerank=Object.fromEntries(Object.entries(scores).map(([id,v])=>[id,v/total]));
+ finalDelta=delta;
+ $("iterations").textContent=iterations;$("convergence").textContent=delta.toExponential(2);
+}
+function getScores(query){
+ const tokens=queryTokens(query);
+ return pages.map(p=>{
+  const haystack=(p.domain+" "+p.title+" "+p.desc+" "+p.keywords.join(" ")).toLowerCase();
+  const matches=tokens.filter(t=>haystack.includes(t));
+  const relevance=tokens.length?matches.length/tokens.length:0;
+  const domainCount=tokens.reduce((n,t)=>n+(p.domain.toLowerCase().split(t).length-1),0);
+  const keywordCount=tokens.reduce((n,t)=>n+p.keywords.filter(k=>k===t).length,0);
+  const frequency=domainCount+keywordCount;
+  const stuffing=tokens.length?Math.max(0,(frequency/(tokens.length*2))-0.55):0;
+  const spam=Math.min(1,p.spam+stuffing*.35);
+  const oldScore=frequency+(relevance*.15);
+  // Educational composite score: link authority + query relevance - spam.
+  const newScore=(pagerank[p.id]*100*.45)+(relevance*100*.50)-(spam*100*.20);
+  return {...p,relevance,frequency,spam,oldScore,newScore};
+ });
+}
+function renderResults(){
+ lastQuery=$("query").value.trim();$("queryLabel").textContent=`Showing results for “${lastQuery||"all websites"}”`;
+ const rows=getScores(lastQuery);
+ const old=[...rows].sort((a,b)=>b.oldScore-a.oldScore||a.domain.localeCompare(b.domain));
+ const modern=[...rows].sort((a,b)=>b.newScore-a.newScore||b.relevance-a.relevance);
+ $("oldResults").innerHTML=old.map((p,i)=>`<div class="result"><div class="rank">${i+1}</div><div><div class="result-name">${esc(p.domain)}</div><div class="result-desc">${esc(p.desc)}</div><div class="why">Keyword matches: ${p.frequency} · Relevance: ${(p.relevance*100).toFixed(0)}%</div></div><span class="metric red">${p.oldScore.toFixed(1)} pts</span></div>`).join("");
+ $("newResults").innerHTML=modern.map((p,i)=>`<div class="result"><div class="rank">${i+1}</div><div><div class="result-name">${esc(p.domain)}</div><div class="result-desc">${esc(p.desc)}</div><div class="why">PageRank: ${(pagerank[p.id]*100).toFixed(2)}% · Relevance: ${(p.relevance*100).toFixed(0)}% · Spam: ${(p.spam*100).toFixed(0)}%</div></div><span class="metric blue">${p.newScore.toFixed(1)} pts</span></div>`).join("");
+}
+function esc(s){return String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]))}
+const coords={pune:[150,95],college:[390,65],best:[650,115],recipes:[650,300],cheap:[390,325],pizza:[150,280]};
+function renderGraph(){
+ const svg=$("network"),edges=[];
+ pages.forEach(p=>p.links.forEach(t=>edges.push({from:p.id,to:t})));
+ let markup=`<defs><marker id="arrow" markerWidth="8" markerHeight="8" refX="6" refY="3" orient="auto"><path d="M0,0 L0,6 L7,3 z" fill="#aebaca"/></marker></defs>`;
+ edges.forEach(e=>{
+  const [x1,y1]=coords[e.from],[x2,y2]=coords[e.to];
+  const active=e.from===selected?"active-out":e.to===selected?"active-in":"";
+  const dim=selected&&e.from!==selected&&e.to!==selected?"dim":"";
+  const mx=(x1+x2)/2,my=(y1+y2)/2-10;
+  markup+=`<path class="edge ${active} ${dim}" d="M ${x1} ${y1} Q ${mx} ${my} ${x2} ${y2}"/>`;
+ });
+ pages.forEach(p=>{
+  const [x,y]=coords[p.id],is=p.id===selected;
+  const connected=selected && pages.some(q=>q.id===selected&&(q.links.includes(p.id)||p.links.includes(selected)));
+  const dim=selected&&!is&&!connected;
+  const short=p.domain.replace(".com","");
+  markup+=`<g class="node ${is?"selected":""} ${dim?"dim":""}" data-id="${p.id}" tabindex="0" role="button" aria-label="${p.domain}"><circle cx="${x}" cy="${y}" r="39"/><text x="${x}" y="${y-3}">${esc(short.length>16?short.slice(0,15)+"…":short)}</text><text x="${x}" y="${y+13}" style="font-size:9px;fill:#65758a;font-weight:600">PR ${(pagerank[p.id]*100).toFixed(1)}%</text></g>`;
+ });
+ svg.innerHTML=markup;
+ svg.querySelectorAll(".node").forEach(node=>{const choose=()=>{selected=node.dataset.id;renderGraph();renderSelectedInfo()};node.addEventListener("click",choose);node.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();choose()}})});
+ renderSelectedInfo();
+}
+function renderSelectedInfo(){
+ const p=pages.find(x=>x.id===selected);if(!p)return;
+ const incoming=pages.filter(x=>x.links.includes(p.id)).map(x=>x.domain);
+ $("selectedInfo").innerHTML=`<strong>${esc(p.domain)}</strong> · PageRank score: <strong>${(pagerank[p.id]*100).toFixed(2)}%</strong><br>Incoming links (${incoming.length}): ${incoming.length?incoming.map(esc).join(", "):"None"}<br>Outgoing links (${p.links.length}): ${p.links.length?p.links.map(id=>esc(pages.find(x=>x.id===id).domain)).join(", "):"None"}`;
+}
+function run(){calculatePageRank();renderResults();renderGraph();$("toast").classList.add("show");setTimeout(()=>$("toast").classList.remove("show"),1700)}
+$("searchForm").addEventListener("submit",e=>{e.preventDefault();renderResults()});
+document.querySelectorAll(".chip").forEach(b=>b.addEventListener("click",()=>{$("query").value=b.dataset.query;renderResults()}));
+$("runBtn").addEventListener("click",run);
+$("addSpamBtn").addEventListener("click",addThreeSpamSites);
+$("compareBtn").addEventListener("click",()=>{renderResults();document.querySelector(".rank-grid").scrollIntoView({behavior:"smooth",block:"center"})});
+$("resetGraph").addEventListener("click",()=>{selected=null;renderGraph();$("selectedInfo").innerHTML="<strong>Select a website node</strong> to inspect its incoming and outgoing links."});
+run();
+</script>
+</body>
+</html>
